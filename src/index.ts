@@ -1,4 +1,5 @@
 import express, {Express, Request, Response} from 'express';
+import { PORT } from './secrets'
 
 const app:Express = express(); 
 
@@ -8,4 +9,4 @@ app.get('/', (req:Request, res:Response) => {
 })
 
 //pruebo si esta operativo
-app.listen(3000, () => {console.log('App working')})
+app.listen(PORT, () => {console.log('App working')})
