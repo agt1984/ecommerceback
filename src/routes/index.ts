@@ -3,6 +3,6 @@ import authRoutes from "./auth";
 
 const rootRouter: Router = Router()
 
-rootRouter.use('/auth', authRoutes)
+rootRouter.use('/auth', authRoutes) //ruta configurada
 
-export default rootRouter  
+export default rootRouter; 
