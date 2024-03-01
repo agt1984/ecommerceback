@@ -7,11 +7,13 @@ import { hashSync } from 'bcrypt';
 export const signup = async (req:Request, res:Response) => {
     const {email, password, name} = req.body;
 
+    //se verifica si el correo ya esta en la base de datos
     let user = await prismaClient.user.findFirst({ where: {email}})
     if (user) {
-        throw Error('User already exists!')
+        throw Error('User already exists!') //si esta el correo se le bota de la autenticacion
     }
 
+    //se espera del usuario nombre, correo y mail
     user = await prismaClient.user.create({
         data:{
             name,
