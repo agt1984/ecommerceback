@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client'; //configuración del cliente Pris
 
 const app:Express = express(); 
 
-app.use(express.json())
+app.use(express.json())//se utiliza en aplicaciones Node.js que usan Express como framework para gestionar solicitudes HTTP. Esta línea específica indica que la aplicación debe utilizar el middleware express.json()
 
 //ahora usemos el router del login
 app.use('/api', rootRouter);
