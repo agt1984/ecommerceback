@@ -2,6 +2,7 @@ import express, {Express, Request, Response} from 'express';
 import { PORT } from './secrets'
 import rootRouter from '../routes';
 import { PrismaClient } from '@prisma/client'; //configuración del cliente Prisma
+import { errorMiddleware } from '../middlewares/errors';
 
 const app:Express = express(); 
 
@@ -14,6 +15,8 @@ app.use('/api', rootRouter);
 export const prismaClient = new PrismaClient({
     log:['query']
 })
+
+app.use(errorMiddleware)//se llama al middleware
 
 //pruebo si esta operativo el puerto
 app.listen(PORT, () => {console.log('App working')})

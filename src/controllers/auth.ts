@@ -1,18 +1,20 @@
 //importa las interfaces Request y Response de Express para ser utilizadas en el código.
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prismaClient } from "../schema";
 import { hashSync, compareSync } from 'bcrypt'; //hashSync para encriptar, compareSync para comparar
 import * as jwt from 'jsonwebtoken'; //importo la libreria para tokenizar la clave
 import { JWT_SECRET } from "../schema/secrets";
+import { BadRequestException } from "../exceptions/bad-requests";
+import { ErrorCode } from "../exceptions/root";
 
 //La función sign up, para crear usuario toma dos parámetros, req y res, que representan la solicitud y la respuesta respectivamente.
-export const signup = async (req:Request, res:Response) => {
+export const signup = async (req:Request, res:Response, next: NextFunction) => {
     const {email, password, name} = req.body;
 
     //se verifica si el correo ya esta en la base de datos
     let user = await prismaClient.user.findFirst({ where: {email}})
     if (user) {
-        throw Error('User already exists!') //si esta el correo se le bota de la autenticacion
+        next (new BadRequestException('User already Exists!', ErrorCode.USER_ALREADY_EXIST)) //si esta el correo se le bota de la autenticacion
     }
 
     //se espera del usuario nombre, correo y mail
