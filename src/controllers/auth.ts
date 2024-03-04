@@ -11,27 +11,28 @@ import { SignUpSchema } from "../schema/users";
 
 //La función sign up, para crear usuario toma dos parámetros, req y res, que representan la solicitud y la respuesta respectivamente.
 export const signup = async (req:Request, res:Response, next: NextFunction) => {
-    try {
-        SignUpSchema.parse(req.body)
-        const {email, password, name} = req.body;
+    SignUpSchema.parse(req.body);
+    const { email, password, name } = req.body;
 
-        //se verifica si el correo ya esta en la base de datos
-        let user = await prismaClient.user.findFirst({ where: {email}})
-        if (user) {
-            next (new BadRequestException('User already Exists!', ErrorCode.USER_ALREADY_EXIST)) //si esta el correo se le bota de la autenticacion
-        }
-        //se espera del usuario nombre, correo y mail
-        user = await prismaClient.user.create({
-            data:{
-                name,
-                email,
-                password: hashSync(password, 10)
-            }
-        })
-        res.json(user)
-    } catch(err:any) {
-        next( new UnprocessableEntity(err?.issues, 'Unprocessable entity', ErrorCode.UNPROCESSABLE_ENTITY))
+    //se verifica si el correo ya esta en la base de datos
+    let user = await prismaClient.user.findFirst({ where: { email } });
+    if (user) {
+      next(
+        new BadRequestException(
+          "User already Exists!",
+          ErrorCode.USER_ALREADY_EXIST
+        )
+      ); //si esta el correo se le bota de la autenticacion
     }
+    //se espera del usuario nombre, correo y mail
+    user = await prismaClient.user.create({
+      data: {
+        name,
+        email,
+        password: hashSync(password, 10),
+      },
+    });
+    res.json(user);
    
 }
 

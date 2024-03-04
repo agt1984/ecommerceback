@@ -1,15 +1,20 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpException } from "../exceptions/root";
+import { HttpException, ErrorCode } from "../exceptions/root";
+import { InternalException } from "../exceptions/internal-exception"
 
+//Manejador de errores
 export const errorHandler = (method: Function) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async(req: Request, res: Response, next: NextFunction) => {
         try {
-            method(req, res, next)
+           await method(req, res, next)
         } catch(error: any) {
             let exception: HttpException;
-            if( error instanceof HttpException ){
+            if( error instanceof HttpException){
                 exception = error;
+            }else{
+                exception = new InternalException('Something went wrong!', error, ErrorCode.INTERNAL_EXCEPTION);
             }
+            next(exception)
         }
 
     }
