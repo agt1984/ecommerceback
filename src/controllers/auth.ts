@@ -10,6 +10,7 @@ import { ErrorCode } from "../exceptions/root";
 import { SignUpSchema } from "../schema/users";
 import { NotFoundException } from "../exceptions/not-found";
 
+
 //La función sign up, para crear usuario toma dos parámetros, req y res, que representan la solicitud y la respuesta respectivamente.
 export const signup = async (req:Request, res:Response, next: NextFunction) => {
     SignUpSchema.parse(req.body);
@@ -50,4 +51,11 @@ export const login = async (req:Request, res:Response) => {
     },JWT_SECRET)
 
     res.json({user, token})
+}
+
+//me -> return of the loggin user
+export const me = async (req:Request, res:Response, next: NextFunction) => {
+ 
+
+    res.json(req.user)
 }
