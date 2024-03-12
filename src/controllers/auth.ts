@@ -6,8 +6,9 @@ import * as jwt from 'jsonwebtoken'; //importo la libreria para tokenizar la cla
 import { JWT_SECRET } from "../schema/secrets";
 import { BadRequestException } from "../exceptions/bad-requests";
 import { ErrorCode } from "../exceptions/root";
-import { UnprocessableEntity } from "../exceptions/validation";
+//import { UnprocessableEntity } from "../exceptions/validation";
 import { SignUpSchema } from "../schema/users";
+import { NotFoundException } from "../exceptions/not-found";
 
 //La función sign up, para crear usuario toma dos parámetros, req y res, que representan la solicitud y la respuesta respectivamente.
 export const signup = async (req:Request, res:Response, next: NextFunction) => {
@@ -15,14 +16,10 @@ export const signup = async (req:Request, res:Response, next: NextFunction) => {
     const { email, password, name } = req.body;
 
     //se verifica si el correo ya esta en la base de datos
-    let user = await prismaClient.user.findFirst({ where: { email } });
+    let user = await prismaClient.user.findFirst({where: { email }});
     if (user) {
-      next(
-        new BadRequestException(
-          "User already Exists!",
-          ErrorCode.USER_ALREADY_EXIST
-        )
-      ); //si esta el correo se le bota de la autenticacion
+        new BadRequestException("User already Exists!", ErrorCode.USER_ALREADY_EXIST)
+       //si esta el correo se le bota de la autenticacion
     }
     //se espera del usuario nombre, correo y mail
     user = await prismaClient.user.create({
@@ -43,10 +40,10 @@ export const login = async (req:Request, res:Response) => {
     //se verifica si el correo ya esta en la base de datos
     let user = await prismaClient.user.findFirst({ where: {email}})
     if (!user) {
-        throw Error('User does not exists!') //si esta el correo se le bota de la autenticacion
+        throw new NotFoundException('User not found.', ErrorCode.USER_NOT_FOUND) //si esta el correo se le bota de la autenticacion
     }
     if(!compareSync(password, user.password)) {
-        throw Error('Incorrect password!')
+        throw new BadRequestException('Incorrect password.', ErrorCode.INCORRECT_PASSWORD)
     }
     const token = jwt.sign({ //esta parte del codigo se encarga de decodificar el password
         userId: user.id
